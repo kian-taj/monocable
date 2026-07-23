@@ -3,8 +3,8 @@
 Build this only on Windows. The application still reads workbook-backed defaults, so the bundled executable must include `MONOFUNI.xls`. Use the checked-in PyInstaller spec instead of a bare `pyinstaller src/winsif_mon/main.py` command.
 
 ```powershell
-py -m pip install -e .[build]
-py -m PyInstaller packaging\winsif_mon.spec
+uv run pip install -e .[build]
+uv run PyInstaller packaging\winsif_mon.spec
 ```
 
 The spec includes:
