@@ -6,7 +6,7 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QPushButton,
-    QSplitter,
+    QTabWidget,
     QTableWidget,
     QTableWidgetItem,
     QVBoxLayout,
@@ -14,6 +14,7 @@ from PySide6.QtWidgets import (
 )
 
 from winsif_mon.domain.terrain import TerrainPoint, load_terrain_profile
+from winsif_mon.ui.charting import apply_nice_y_axis, padded_range
 
 
 class F02Page(QWidget):
@@ -50,15 +51,15 @@ class F02Page(QWidget):
         self.chart.legend().setVisible(True)
         self.chart_view = QChartView(self.chart)
         self.chart_view.setMinimumHeight(460)
-        layout.addWidget(self.chart_view)
 
-        splitter = QSplitter(Qt.Horizontal)
         self.ascent_table = self._make_table("ASCENT BRANCH", self.profile.ascent)
         self.descent_table = self._make_table("DESCENT BRANCH", self.profile.descent)
-        splitter.addWidget(self.ascent_table)
-        splitter.addWidget(self.descent_table)
-        splitter.setSizes([1, 1])
-        layout.addWidget(splitter, 1)
+
+        tabs = QTabWidget()
+        tabs.addTab(self.chart_view, "Ground Profile Plot")
+        tabs.addTab(self.ascent_table, "Ascent Branch")
+        tabs.addTab(self.descent_table, "Descent Branch")
+        layout.addWidget(tabs, 1)
         self._refresh_chart()
 
     def _make_table(self, title: str, rows: list[TerrainPoint]) -> QTableWidget:
@@ -143,10 +144,8 @@ class F02Page(QWidget):
         if points:
             min_x = min(point.x() for point in points)
             max_x = max(point.x() for point in points)
-            min_y = min(point.y() for point in points)
-            max_y = max(point.y() for point in points)
-            axis_x.setRange(min_x, max_x)
-            axis_y.setRange(min_y, max_y)
+            axis_x.setRange(*padded_range((min_x, max_x), padding_ratio=0.03))
+            apply_nice_y_axis(axis_y, (point.y() for point in points), tick_count=6)
 
     def _series_from_table(self, table: QTableWidget, name: str) -> QLineSeries:
         series = QLineSeries()

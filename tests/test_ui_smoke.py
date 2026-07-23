@@ -1,6 +1,6 @@
 import os
 
-from PySide6.QtWidgets import QApplication, QDoubleSpinBox, QSpinBox
+from PySide6.QtWidgets import QApplication, QComboBox, QDoubleSpinBox, QPushButton, QSpinBox
 
 from winsif_mon.ui.geometry_pages import SpanGeometryPage, SupportGeometryPage
 from winsif_mon.ui.line_tools_pages import FrictionAssignmentPage, LineResultsPage
@@ -88,10 +88,20 @@ def test_main_window_uses_structured_geometry_pages_and_unit_suffixes():
     assert working_speed.suffix() == " [m/s]"
     assert line_verification.matrix_table.rowCount() == 15
     assert line_verification.matrix_table.columnCount() == 7
+    action_labels = {button.text() for button in line_verification.findChildren(QPushButton)}
+    assert "Calculate Normal" in action_labels
+    assert not any(label.startswith("Calcola") for label in action_labels)
     assert custom_loads.table.columnCount() == 22
+    assert custom_loads.load_target.count() == 3
     assert friction.ascent_table.columnCount() == 4
     assert friction.descent_table.columnCount() == 4
     assert friction.steady_default.suffix() == " %"
+    mode = friction.ascent_table.cellWidget(0, 1)
+    steady = friction.ascent_table.cellWidget(0, 2)
+    assert isinstance(mode, QComboBox)
+    assert isinstance(steady, QDoubleSpinBox)
+    mode.setCurrentIndex(1)
+    assert "%" not in steady.suffix()
     assert line_results.ascent_table.columnCount() == 15
     assert line_results.descent_table.columnCount() == 15
     assert line_results.ascent_table.item(0, 0).text() == "Valle"

@@ -26,7 +26,7 @@ class PowerTraceCase:
 
 
 TRACE_START_ROWS = {
-    ResultFamily.NORMAL: (4, 100),
+    ResultFamily.NORMAL: (4, 122),
     ResultFamily.PLUS_TEN: (200, 300),
     ResultFamily.MINUS_TEN: (400, 500),
     ResultFamily.HYDRAULIC: (600, 700),
@@ -56,7 +56,10 @@ def _read_trace(reader: WorkbookReader, start_row: int, col: int) -> list[PowerT
     points: list[PowerTracePoint] = []
     row = start_row
     while row < start_row + 450:
-        ascent = _number(reader.value("STORE13", row, col))
+        ascent_value = reader.value("STORE13", row, col)
+        if ascent_value == "":
+            break
+        ascent = _number(ascent_value)
         descent = _number(reader.value("STORE13", row + 1, col))
         _stroke = _number(reader.value("STORE13", row + 2, col))
         offset = _number(reader.value("STORE13", row + 3, col))

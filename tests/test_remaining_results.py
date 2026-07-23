@@ -16,11 +16,13 @@ def test_f09_power_trace_reads_store13_defaults():
 
     trace = load_power_trace_case(ResultFamily.NORMAL, reference, verification)
 
-    assert len(trace.forward) == 47
-    assert len(trace.reverse) == 28
+    assert len(trace.forward) == 11
+    assert len(trace.reverse) == 11
     assert trace.forward[0].offset_m == 0.0
+    assert trace.forward[-1].offset_m == 15.0
     assert trace.forward[0].ascent_tension_da_n == pytest.approx(7471.770942704483)
     assert trace.forward[0].motive_force_da_n == pytest.approx(3897.945301459862)
+    assert trace.reverse[0].ascent_tension_da_n == pytest.approx(8649.79117909594)
 
 
 def test_f10_max_min_reads_store05_defaults():

@@ -11,7 +11,7 @@ from PySide6.QtWidgets import (
     QLabel,
     QMessageBox,
     QPushButton,
-    QSplitter,
+    QTabWidget,
     QTableWidget,
     QTableWidgetItem,
     QVBoxLayout,
@@ -74,19 +74,15 @@ class SupportGeometryPage(QWidget):
         toolbar.addStretch(1)
         layout.addLayout(toolbar)
 
-        splitter = QSplitter(Qt.Vertical)
-        branch_splitter = QSplitter(Qt.Horizontal)
         self.ascent_table = self._support_table("Ascent Branch Supports")
         self.descent_table = self._support_table("Descent Branch Supports")
-        branch_splitter.addWidget(_table_panel("Ascent Branch Supports", self.ascent_table))
-        branch_splitter.addWidget(_table_panel("Descent Branch Supports", self.descent_table))
-        branch_splitter.setSizes([1, 1])
-
         self.foundation_table = self._foundation_table()
-        splitter.addWidget(branch_splitter)
-        splitter.addWidget(_table_panel("Support And Foundation Drawing Dimensions", self.foundation_table))
-        splitter.setSizes([640, 220])
-        layout.addWidget(splitter, 1)
+
+        tabs = QTabWidget()
+        tabs.addTab(self.ascent_table, "Ascent Branch Supports")
+        tabs.addTab(self.descent_table, "Descent Branch Supports")
+        tabs.addTab(self.foundation_table, "Foundation Dimensions")
+        layout.addWidget(tabs, 1)
 
         self.refresh_from_state()
 
@@ -213,13 +209,13 @@ class SpanGeometryPage(QWidget):
         toolbar.addStretch(1)
         layout.addLayout(toolbar)
 
-        splitter = QSplitter(Qt.Horizontal)
         self.ascent_table = self._span_table("Ascent Branch Spans")
         self.descent_table = self._span_table("Descent Branch Spans")
-        splitter.addWidget(_table_panel("Ascent Branch Spans", self.ascent_table))
-        splitter.addWidget(_table_panel("Descent Branch Spans", self.descent_table))
-        splitter.setSizes([1, 1])
-        layout.addWidget(splitter, 1)
+
+        tabs = QTabWidget()
+        tabs.addTab(self.ascent_table, "Ascent Branch Spans")
+        tabs.addTab(self.descent_table, "Descent Branch Spans")
+        layout.addWidget(tabs, 1)
 
         self.refresh_from_state()
 

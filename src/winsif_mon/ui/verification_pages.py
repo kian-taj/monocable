@@ -193,7 +193,15 @@ class CustomLoadCasesPage(QWidget):
         controls.addWidget(self.selected_span)
         controls.addWidget(self.all_spans)
 
+        self.load_target = QComboBox()
+        self.load_target.addItem("Selected cell", "cell")
+        self.load_target.addItem("Selected hypothesis", "hypothesis")
+        self.load_target.addItem("All load cases", "all")
+        controls.addWidget(QLabel("Target"))
+        controls.addWidget(self.load_target)
+
         controls.addWidget(self._button("Apply Load", self.apply_load))
+        controls.addWidget(self._button("Reset Selected Span", self.reset_selected_span))
         controls.addWidget(self._button("Reset All Loads", self.reset_all_loads))
         controls.addStretch(1)
         layout.addLayout(controls)
@@ -201,7 +209,7 @@ class CustomLoadCasesPage(QWidget):
         self.table = QTableWidget(len(self.custom_load_state.rows), 22)
         self.table.setObjectName("custom_load_cases")
         self.table.setAlternatingRowColors(True)
-        self.table.setSelectionBehavior(QAbstractItemView.SelectItems)
+        self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.table.setHorizontalHeaderLabels(_custom_load_headers())
         self.table.cellChanged.connect(lambda _row, _col: self._save_to_state())
         self.table.setColumnWidth(0, 120)
@@ -233,11 +241,17 @@ class CustomLoadCasesPage(QWidget):
             value = self.custom_value.value()
         rows = range(self.table.rowCount()) if self.all_spans.isChecked() else [max(self.table.currentRow(), 0)]
         col = self.table.currentColumn()
-        if col < 2:
-            col = 2
         for row in rows:
             for target_col in self._target_columns(col):
                 self.table.setItem(row, target_col, QTableWidgetItem(_format(value)))
+        self._save_to_state()
+
+    def reset_selected_span(self) -> None:
+        row = self.table.currentRow()
+        if row < 0:
+            row = 0
+        for col in range(2, self.table.columnCount()):
+            self.table.setItem(row, col, QTableWidgetItem(""))
         self._save_to_state()
 
     def reset_all_loads(self) -> None:
@@ -247,8 +261,14 @@ class CustomLoadCasesPage(QWidget):
         self._save_to_state()
 
     def _target_columns(self, current_col: int) -> list[int]:
+        target = self.load_target.currentData()
+        if target == "all":
+            return list(range(2, self.table.columnCount()))
         if current_col < 2:
-            return [2]
+            current_col = 2
+        if target == "hypothesis":
+            start = current_col if current_col % 2 == 0 else current_col - 1
+            return [start, start + 1]
         return [current_col]
 
     def _save_to_state(self) -> None:

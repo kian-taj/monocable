@@ -99,13 +99,13 @@ class MainWindow(QMainWindow):
         self._add_page("Support Geometry", support_page)
         self._add_page("Span Geometry", span_page)
 
-        normal = self._button("Calcola normale", lambda: self._calculation_stub(CalculationMode.NORMAL))
-        anchored = self._button("Calcola ancorata", lambda: self._calculation_stub(CalculationMode.ANCHORED))
+        normal = self._button("Calculate Normal", lambda: self._calculation_stub(CalculationMode.NORMAL))
+        anchored = self._button("Calculate Anchored", lambda: self._calculation_stub(CalculationMode.ANCHORED))
         variable = self._button(
-            "Calcola variazione tensione",
+            "Calculate Tension Variation",
             lambda: self._calculation_stub(CalculationMode.VARIABLE_TENSION),
         )
-        hydraulic = self._button("Calcola idraulica", self._open_hydraulic)
+        hydraulic = self._button("Calculate Hydraulic", self._open_hydraulic)
         self._add_page(
             "Line Verification",
             LineVerificationPage(

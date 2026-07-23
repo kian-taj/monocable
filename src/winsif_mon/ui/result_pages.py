@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any
 
 from PySide6.QtCharts import QChart, QChartView, QLineSeries, QValueAxis
-from PySide6.QtCore import Qt
+from PySide6.QtCore import QMargins, Qt
 from PySide6.QtWidgets import (
     QAbstractItemView,
     QComboBox,
@@ -11,6 +11,7 @@ from PySide6.QtWidgets import (
     QHeaderView,
     QLabel,
     QPushButton,
+    QTabWidget,
     QTableWidget,
     QTableWidgetItem,
     QTextEdit,
@@ -25,6 +26,7 @@ from winsif_mon.domain.power_summary import PowerSummaryRow, load_power_summary_
 from winsif_mon.domain.report import build_general_report
 from winsif_mon.domain.verification import VerificationState, load_verification_state
 from winsif_mon.domain.verification_plots import PowerTracePoint, load_power_trace_case
+from winsif_mon.ui.charting import apply_nice_y_axis, padded_range
 
 
 class VerificationPlotsPage(QWidget):
@@ -41,13 +43,15 @@ class VerificationPlotsPage(QWidget):
         layout.addWidget(self.summary)
 
         self.chart = QChart()
+        self.chart.setMargins(QMargins(24, 24, 24, 24))
         self.chart.legend().setVisible(True)
         self.chart_view = QChartView(self.chart)
         self.chart_view.setMinimumHeight(430)
-        layout.addWidget(self.chart_view)
-
         self.table = _table("verification_plot_trace", _trace_headers())
-        layout.addWidget(self.table, 1)
+        tabs = QTabWidget()
+        tabs.addTab(self.chart_view, "Power Trace Plot")
+        tabs.addTab(self.table, "Trace Values")
+        layout.addWidget(tabs, 1)
         self.refresh()
 
     def refresh(self) -> None:
@@ -102,8 +106,8 @@ class VerificationPlotsPage(QWidget):
             series.attachAxis(axis_x)
             series.attachAxis(axis_y)
         if all_points:
-            axis_x.setRange(min(x for x, _y in all_points), max(x for x, _y in all_points))
-            axis_y.setRange(min(y for _x, y in all_points), max(y for _x, y in all_points))
+            axis_x.setRange(*padded_range((x for x, _y in all_points), padding_ratio=0.06))
+            apply_nice_y_axis(axis_y, (y for _x, y in all_points), tick_count=6)
 
     def _fill_table(self, forward: list[PowerTracePoint], reverse: list[PowerTracePoint]) -> None:
         rows = []
@@ -129,10 +133,10 @@ class MaxMinResultsPage(QWidget):
         layout.addWidget(self.summary)
         self.ascent_table = _table("ascent_max_min_results", _max_min_headers())
         self.descent_table = _table("descent_max_min_results", _max_min_headers())
-        layout.addWidget(_section("Ascent Branch Max/Min"))
-        layout.addWidget(self.ascent_table, 1)
-        layout.addWidget(_section("Descent Branch Max/Min"))
-        layout.addWidget(self.descent_table, 1)
+        tabs = QTabWidget()
+        tabs.addTab(self.ascent_table, "Ascent Branch Max/Min")
+        tabs.addTab(self.descent_table, "Descent Branch Max/Min")
+        layout.addWidget(tabs, 1)
         self.refresh()
 
     def refresh(self) -> None:
@@ -157,10 +161,10 @@ class PowerSummaryPage(QWidget):
         layout.addWidget(self.summary)
         self.forward_table = _table("forward_power_summary", _power_headers())
         self.reverse_table = _table("reverse_power_summary", _power_headers())
-        layout.addWidget(_section("Forward Running"))
-        layout.addWidget(self.forward_table, 1)
-        layout.addWidget(_section("Reverse Running"))
-        layout.addWidget(self.reverse_table, 1)
+        tabs = QTabWidget()
+        tabs.addTab(self.forward_table, "Forward Running")
+        tabs.addTab(self.reverse_table, "Reverse Running")
+        layout.addWidget(tabs, 1)
         self.refresh()
 
     def refresh(self) -> None:
@@ -215,13 +219,13 @@ class LayingTensionPage(QWidget):
         self.chart.legend().setVisible(True)
         self.chart_view = QChartView(self.chart)
         self.chart_view.setMinimumHeight(360)
-        layout.addWidget(self.chart_view)
         self.ascent_table = _table("ascent_laying_tension", _laying_headers())
         self.descent_table = _table("descent_laying_tension", _laying_headers())
-        layout.addWidget(_section("Ascent Laying Spans"))
-        layout.addWidget(self.ascent_table, 1)
-        layout.addWidget(_section("Descent Laying Spans"))
-        layout.addWidget(self.descent_table, 1)
+        tabs = QTabWidget()
+        tabs.addTab(self.chart_view, "Laying Tension Plot")
+        tabs.addTab(self.ascent_table, "Ascent Laying Spans")
+        tabs.addTab(self.descent_table, "Descent Laying Spans")
+        layout.addWidget(tabs, 1)
         self.refresh()
 
     def refresh(self) -> None:
@@ -254,7 +258,7 @@ class LayingTensionPage(QWidget):
         last.attachAxis(axis_y)
         axis_x.setRange(-20, 30)
         values = [value for _temperature, first_value, last_value in self.state.temperature_curve for value in (first_value, last_value)]
-        axis_y.setRange(min(values), max(values))
+        apply_nice_y_axis(axis_y, values, tick_count=6)
 
 
 def _family_selector(slot) -> QComboBox:

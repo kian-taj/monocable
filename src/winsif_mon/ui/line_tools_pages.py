@@ -8,12 +8,12 @@ from PySide6.QtWidgets import (
     QComboBox,
     QDoubleSpinBox,
     QFormLayout,
-    QGridLayout,
     QHBoxLayout,
     QHeaderView,
     QLabel,
     QMessageBox,
     QPushButton,
+    QTabWidget,
     QTableWidget,
     QTableWidgetItem,
     QVBoxLayout,
@@ -61,14 +61,12 @@ class FrictionAssignmentPage(QWidget):
         layout.addLayout(self._settings_layout())
         layout.addLayout(self._actions_layout())
 
-        grid = QGridLayout()
         self.ascent_table = self._table("ascent_friction")
         self.descent_table = self._table("descent_friction")
-        grid.addWidget(self._section_label("Ascent Branch Frictions"), 0, 0)
-        grid.addWidget(self._section_label("Descent Branch Frictions"), 0, 1)
-        grid.addWidget(self.ascent_table, 1, 0)
-        grid.addWidget(self.descent_table, 1, 1)
-        layout.addLayout(grid, 1)
+        tabs = QTabWidget()
+        tabs.addTab(self.ascent_table, "Ascent Branch Frictions")
+        tabs.addTab(self.descent_table, "Descent Branch Frictions")
+        layout.addWidget(tabs, 1)
         self.refresh_tables()
 
     def assign_ascent_defaults(self) -> None:
@@ -169,11 +167,11 @@ class FrictionAssignmentPage(QWidget):
             table.setCellWidget(row_index, 3, braking)
 
     def _save_settings(self) -> None:
-        mode = self.default_mode.currentData()
-        self.friction_state.settings.default_mode = mode if isinstance(mode, FrictionMode) else FrictionMode.PERCENT
+        mode = _friction_mode(self.default_mode.currentData())
+        self.friction_state.settings.default_mode = mode
         self.friction_state.settings.steady_value = self.steady_default.value()
         self.friction_state.settings.braking_value = self.braking_default.value()
-        unit = self.friction_state.settings.default_mode.unit
+        unit = mode.unit
         self.steady_default.setSuffix(f" {unit}")
         self.braking_default.setSuffix(f" {unit}")
 
@@ -186,8 +184,8 @@ class FrictionAssignmentPage(QWidget):
 
     def _mode_changed(self, table: QTableWidget, row: int) -> None:
         mode_editor = table.cellWidget(row, 1)
-        mode = mode_editor.currentData() if isinstance(mode_editor, QComboBox) else FrictionMode.PERCENT
-        unit = mode.unit if isinstance(mode, FrictionMode) else "%"
+        mode = _friction_mode(mode_editor.currentData() if isinstance(mode_editor, QComboBox) else None)
+        unit = mode.unit
         for col in (2, 3):
             editor = table.cellWidget(row, col)
             if isinstance(editor, QDoubleSpinBox):
@@ -202,13 +200,13 @@ class FrictionAssignmentPage(QWidget):
             if not code:
                 continue
             mode_editor = table.cellWidget(row, 1)
-            mode = mode_editor.currentData() if isinstance(mode_editor, QComboBox) else FrictionMode.PERCENT
+            mode = _friction_mode(mode_editor.currentData() if isinstance(mode_editor, QComboBox) else None)
             steady_editor = table.cellWidget(row, 2)
             braking_editor = table.cellWidget(row, 3)
             rows.append(
                 FrictionAssignmentRow(
                     support_code=code,
-                    mode=mode if isinstance(mode, FrictionMode) else FrictionMode.PERCENT,
+                    mode=mode,
                     steady_value=steady_editor.value() if isinstance(steady_editor, QDoubleSpinBox) else 0.0,
                     braking_value=braking_editor.value() if isinstance(braking_editor, QDoubleSpinBox) else 0.0,
                 )
@@ -260,10 +258,10 @@ class LineResultsPage(QWidget):
 
         self.ascent_table = self._table("ascent_line_results")
         self.descent_table = self._table("descent_line_results")
-        layout.addWidget(self._section_label("Ascent Branch Results"))
-        layout.addWidget(self.ascent_table, 1)
-        layout.addWidget(self._section_label("Descent Branch Results"))
-        layout.addWidget(self.descent_table, 1)
+        tabs = QTabWidget()
+        tabs.addTab(self.ascent_table, "Ascent Branch Results")
+        tabs.addTab(self.descent_table, "Descent Branch Results")
+        layout.addWidget(tabs, 1)
         self.refresh_results()
 
     def refresh_results(self) -> None:
@@ -356,6 +354,12 @@ def _double_editor(value: Any, unit: str) -> QDoubleSpinBox:
     editor.setValue(float(value or 0.0))
     editor.setSuffix(f" {unit}")
     return editor
+
+
+def _friction_mode(value: Any) -> FrictionMode:
+    if value == FrictionMode.ABSOLUTE:
+        return FrictionMode.ABSOLUTE
+    return FrictionMode.PERCENT
 
 
 def _format(value: Any) -> str:
