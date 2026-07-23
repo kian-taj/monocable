@@ -1,0 +1,38 @@
+Workbook: C:\Users\Kian\Desktop\WinSif_MON_cracked\MONOFUNI.xls
+VBA project: VBAProject
+Exported: 2026-07-20 12:06:46
+
+Foglio1 | Type=Excel Document Module | Lines=97
+Foglio8 | Type=Excel Document Module | Lines=200
+Linea | Type=Excel Document Module | Lines=435
+Linea1 | Type=Excel Document Module | Lines=321
+ThisWorkbook | Type=Excel Document Module | Lines=126
+Modulo1 | Type=Standard Module | Lines=3326
+Foglio2 | Type=Excel Document Module | Lines=47
+Foglio3 | Type=Excel Document Module | Lines=107
+Foglio11 | Type=Excel Document Module | Lines=485
+Foglio4 | Type=Excel Document Module | Lines=77
+Foglio5 | Type=Excel Document Module | Lines=177
+Foglio6 | Type=Excel Document Module | Lines=0
+Foglio7 | Type=Excel Document Module | Lines=198
+Foglio9 | Type=Excel Document Module | Lines=29
+Foglio10 | Type=Excel Document Module | Lines=15
+idraulic_input | Type=UserForm | Lines=126
+Foglio12 | Type=Excel Document Module | Lines=139
+Foglio121 | Type=Excel Document Module | Lines=58
+Modulo2 | Type=Standard Module | Lines=592
+Modulo3 | Type=Standard Module | Lines=33
+Modulo4 | Type=Standard Module | Lines=94
+Modulo5 | Type=Standard Module | Lines=398
+Foglio13 | Type=Excel Document Module | Lines=99
+Modulo6 | Type=Standard Module | Lines=175
+OS | Type=Class Module | Lines=161
+DriveInfo | Type=Standard Module | Lines=172
+Foglio22 | Type=Excel Document Module | Lines=0
+Foglio23 | Type=Excel Document Module | Lines=0
+Foglio24 | Type=Excel Document Module | Lines=0
+Foglio14 | Type=Excel Document Module | Lines=0
+Foglio15 | Type=Excel Document Module | Lines=0
+Foglio16 | Type=Excel Document Module | Lines=0
+Module1 | Type=Standard Module | Lines=24
+Module2 | Type=Standard Module | Lines=153

@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "winsif-mon"
+version = "0.1.0"
+description = "PySide6 migration scaffold for the MONOFUNI Excel/VBA workbook."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "PySide6>=6.6",
+]
+
+[project.optional-dependencies]
+excel = [
+    "xlrd>=2.0.1",
+]
+dev = [
+    "pytest>=8",
+]
+build = [
+    "pyinstaller>=6",
+]
+
+[project.scripts]
+winsif-mon = "winsif_mon.main:main"
+winsif-inventory = "winsif_mon.inventory:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]

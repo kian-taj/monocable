@@ -1,0 +1,10 @@
+VERSION 5.00
+Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} idraulic_input 
+   Caption         =   "Verifica della linea per guasto al tenditore idraulico : impostazione dei parametri di riferimento"
+   ClientHeight    =   8205
+   ClientLeft      =   45
+   ClientTop       =   330
+   ClientWidth     =   11925
+   StartUpPosition =   1  'CenterOwner
+   TypeInfoVer     =   73
+End
